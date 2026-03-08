@@ -3,7 +3,6 @@ const express = require('express');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
 const cors = require('cors');
-const path = require('path');
 
 const app = express();
 const upload = multer({ 
@@ -18,35 +17,32 @@ const NAVER_ID = process.env.NAVER_ID;
 const NAVER_PW = process.env.NAVER_PW; 
 
 app.post('/send-email', upload.array('photos'), async (req, res) => {
-    console.log('--- 메일 발송 요청 받음 ---');
+    console.log('--- [DEBUG] 메일 발송 요청 시작 ---');
 
-    // 환경 변수 체크 로그 (보안을 위해 값은 출력하지 않음)
     if (!NAVER_ID || !NAVER_PW) {
-        console.error('에러: NAVER_ID 또는 NAVER_PW 환경 변수가 설정되지 않았습니다.');
-        return res.status(500).send('서버 설정 오류 (환경 변수 누락)');
+        console.error('❌ 환경 변수 누락');
+        return res.status(500).send('서버 환경 변수 설정 필요');
     }
 
     try {
         const { recipientEmail, subject, message } = req.body;
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).send('사진을 선택해 주세요.');
-        }
 
-        console.log(`대상: ${recipientEmail}, 사진 수: ${req.files.length}`);
+        // 아이디 형식 자동 교정
+        const userEmail = NAVER_ID.includes('@') ? NAVER_ID : `${NAVER_ID}@naver.com`;
+        console.log(`--- [DEBUG] 발송자: ${userEmail}, 수신자: ${recipientEmail} ---`);
 
-        // 포트 465 (SSL) 방식 사용
+        // 최적화된 트랜스포터 설정
         let transporter = nodemailer.createTransport({
-            host: 'smtp.naver.com',
-            port: 465,
-            secure: true, // SSL 사용
+            service: 'naver', // 네이버 전용 프리셋 사용
             auth: {
-                user: `${NAVER_ID}@naver.com`,
+                user: userEmail,
                 pass: NAVER_PW
             },
+            debug: true,   // 통신 과정 로그 출력
+            logger: true,  // 상세 로거 활성화
             tls: {
-                rejectUnauthorized: false // 인증서 검증 완화 (연결 안정성)
-            },
-            timeout: 20000 // 20초 타임아웃
+                rejectUnauthorized: false
+            }
         });
 
         const attachments = req.files.map(file => ({
@@ -54,26 +50,25 @@ app.post('/send-email', upload.array('photos'), async (req, res) => {
             content: file.buffer
         }));
 
-        console.log('네이버 서버(465)로 메일 전송 시도 중...');
+        console.log('--- [DEBUG] 네이버 서버에 연결 시도 중... ---');
 
         await transporter.sendMail({
-            from: `${NAVER_ID}@naver.com`, // 보내는 사람 주소가 아이디와 정확히 일치해야 함
+            from: userEmail,
             to: recipientEmail || process.env.TARGET_EMAIL,
             subject: subject || `📸 사진 전송 알림`,
-            text: message || '웹사이트에서 보낸 사진들이 도착했습니다.',
+            text: message || '웹사이트에서 보낸 사진들입니다.',
             attachments: attachments
         });
 
-        console.log('✅ 전송 성공!');
+        console.log('✅ [DEBUG] 메일 발송 성공!');
         res.status(200).send('success');
     } catch (error) {
-        console.error('❌ 메일 전송 실패 상세:', error);
+        console.error('❌ [DEBUG] 최종 에러 발생:', error);
         res.status(500).send('발송 실패: ' + error.message);
     }
 });
 
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`서버가 http://localhost:${PORT} 에서 실행 중입니다.`);
+    console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
 });
-
