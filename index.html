@@ -330,7 +330,7 @@
         status.textContent = '네이버 메일로 안전하게 보내고 있습니다.';
 
         try {
-            const response = await fetch('/send-email', {
+            const response = await fetch('/api/send-email', {
                 method: 'POST',
                 body: formData
             });
