@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
@@ -13,10 +14,10 @@ const upload = multer({
 app.use(cors());
 app.use(express.static('.'));
 
-// --- ⚠️ 사용자 설정 (이 부분을 꼭 수정해야 합니다!) ---
-const NAVER_ID = 'your_id'; // 네이버 아이디 (@naver.com 제외)
-const NAVER_PW = 'app_password'; // 네이버 2단계 인증 시 생성한 '애플리케이션 비밀번호'
-const TARGET_EMAIL = 'receiver@example.com'; // 사진을 받을 이메일 주소
+// --- 🔒 보안 강화: .env 파일에서 정보를 읽어옵니다. ---
+const NAVER_ID = process.env.NAVER_ID; 
+const NAVER_PW = process.env.NAVER_PW; 
+const TARGET_EMAIL = process.env.TARGET_EMAIL; 
 // ---------------------------------------------------
 
 app.post('/send-email', upload.array('photos'), async (req, res) => {
