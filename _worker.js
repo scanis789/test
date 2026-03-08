@@ -2,6 +2,7 @@ export default {
     async fetch(request, env) {
         const url = new URL(request.url);
 
+        // 1. 메일 발송 로직 (POST /send-email)
         if (request.method === 'POST' && url.pathname === '/send-email') {
             try {
                 const formData = await request.formData();
@@ -14,22 +15,13 @@ export default {
                     return new Response('사진을 선택해 주세요.', { status: 400 });
                 }
 
-                // 큰 파일도 안전하게 Base64로 변환하는 함수
-                const arrayBufferToBase64 = (buffer) => {
-                    let binary = '';
-                    const bytes = new Uint8Array(buffer);
-                    const len = bytes.byteLength;
-                    for (let i = 0; i < len; i++) {
-                        binary += String.fromCharCode(bytes[i]);
-                    }
-                    return btoa(binary);
-                };
-
+                // 효율적인 Base64 변환 (메모리 절약형)
                 const attachments = await Promise.all(photos.map(async (file) => {
                     const buffer = await file.arrayBuffer();
+                    const binary = String.fromCharCode(...new Uint8Array(buffer));
                     return {
                         filename: file.name,
-                        content: arrayBufferToBase64(buffer)
+                        content: btoa(binary)
                     };
                 }));
 
@@ -40,7 +32,7 @@ export default {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: 'WifeApp <onboarding@resend.dev>', 
+                        from: 'onboarding@resend.dev',
                         to: recipientEmail,
                         subject: subject,
                         text: message,
@@ -51,14 +43,16 @@ export default {
                 if (resendResponse.ok) {
                     return new Response('success', { status: 200 });
                 } else {
-                    const errorData = await resendResponse.json();
-                    return new Response(`Resend Error: ${JSON.stringify(errorData)}`, { status: 500 });
+                    const errorMsg = await resendResponse.text();
+                    return new Response(`Resend Error: ${errorMsg}`, { status: 500 });
                 }
             } catch (error) {
                 return new Response(`Worker Error: ${error.message}`, { status: 500 });
             }
         }
 
-        return fetch(request);
+        // 2. 중요: 정적 파일(index.html 등)은 클라우드플레어 에셋 엔진에서 가져옴
+        // 이 부분이 무한 루프를 방지하는 핵심입니다.
+        return env.ASSETS.fetch(request);
     }
 };
