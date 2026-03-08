@@ -5,7 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>로또 번호 생성기</title>
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f8fbff 0%, #eaf2ff 100%);
+      --card-bg: #ffffff;
+      --text-main: #111827;
+      --text-desc: #4b5563;
+      --ball-bg: #f1f5f9;
+      --ball-text: #1e293b;
+      --btn-secondary-bg: #e5e7eb;
+      --btn-secondary-text: #111827;
+      --history-item-bg: #f8fafc;
+      --history-item-text: #334155;
+      --history-title: #1f2937;
+      --hint-text: #6b7280;
+    }
+
+    [data-theme='dark'] {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-desc: #94a3b8;
+      --ball-bg: #334155;
+      --ball-text: #f8fafc;
+      --btn-secondary-bg: #334155;
+      --btn-secondary-text: #f8fafc;
+      --history-item-bg: #334155;
+      --history-item-text: #cbd5e1;
+      --history-title: #f1f5f9;
+      --hint-text: #94a3b8;
+    }
+
+    * { box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease; }
 
     body {
       margin: 0;
@@ -13,29 +43,49 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #f8fbff 0%, #eaf2ff 100%);
+      font-family: 'Pretendard', sans-serif;
+      background: var(--bg-gradient);
       padding: 24px;
+      color: var(--text-main);
     }
 
     .card {
       width: 100%;
       max-width: 520px;
-      background: #ffffff;
+      background: var(--card-bg);
       border-radius: 24px;
       padding: 32px 24px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
       text-align: center;
+      position: relative;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
     }
 
     h1 {
       margin: 0 0 10px;
       font-size: 32px;
+      color: var(--text-main);
     }
 
     .desc {
       margin: 0 0 24px;
-      color: #555;
+      color: var(--text-desc);
       line-height: 1.5;
       font-size: 16px;
     }
@@ -58,19 +108,19 @@
       justify-content: center;
       font-size: 22px;
       font-weight: 700;
-      color: #222;
-      background: #f1f5f9;
+      color: var(--ball-text);
+      background: var(--ball-bg);
       border: 2px solid rgba(0, 0, 0, 0.06);
       transform: scale(0.8);
       opacity: 0;
       animation: popIn 0.35s ease forwards;
     }
 
-    .ball.yellow { background: #ffe082; }
-    .ball.blue { background: #90caf9; }
-    .ball.red { background: #ef9a9a; }
-    .ball.gray { background: #d6d6d6; }
-    .ball.green { background: #a5d6a7; }
+    .ball.yellow { background: #facc15; color: #422006; }
+    .ball.blue { background: #60a5fa; color: #1e3a8a; }
+    .ball.red { background: #f87171; color: #450a0a; }
+    .ball.gray { background: #94a3b8; color: #0f172a; }
+    .ball.green { background: #4ad66d; color: #064e3b; }
 
     @keyframes popIn {
       to {
@@ -93,13 +143,10 @@
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 0.15s ease, filter 0.15s ease;
+      transition: transform 0.1s ease, filter 0.15s ease;
     }
 
-    button:hover {
-      transform: translateY(-1px);
-      filter: brightness(0.98);
-    }
+    button:active { transform: scale(0.96); }
 
     .primary {
       background: #2563eb;
@@ -107,8 +154,8 @@
     }
 
     .secondary {
-      background: #e5e7eb;
-      color: #111827;
+      background: var(--btn-secondary-bg);
+      color: var(--btn-secondary-text);
     }
 
     .history {
@@ -119,33 +166,37 @@
     .history h2 {
       font-size: 18px;
       margin: 0 0 12px;
+      color: var(--history-title);
     }
 
     .history-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-height: 220px;
+      max-height: 200px;
       overflow: auto;
+      padding-right: 4px;
     }
 
     .history-item {
-      padding: 10px 12px;
+      padding: 10px 14px;
       border-radius: 12px;
-      background: #f8fafc;
+      background: var(--history-item-bg);
       font-size: 15px;
-      color: #334155;
+      color: var(--history-item-text);
+      border: 1px solid rgba(0,0,0,0.03);
     }
 
     .hint {
       margin-top: 18px;
       font-size: 13px;
-      color: #777;
+      color: var(--hint-text);
     }
   </style>
 </head>
 <body>
   <div class="card">
+    <button class="theme-toggle" id="themeToggle" title="테마 변경">☀️</button>
     <h1>로또 번호 생성기</h1>
     <p class="desc">1부터 45까지 중 중복 없이 6개 번호를 랜덤으로 생성합니다.</p>
 
@@ -171,8 +222,26 @@
     const generateBtn = document.getElementById('generateBtn');
     const copyBtn = document.getElementById('copyBtn');
     const resetBtn = document.getElementById('resetBtn');
+    const themeToggle = document.getElementById('themeToggle');
 
     let currentNumbers = [];
+
+    // Theme Management
+    const savedTheme = localStorage.getItem('lotto-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+
+    function updateThemeIcon(theme) {
+      themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('lotto-theme', newTheme);
+      updateThemeIcon(newTheme);
+    });
 
     function getColorClass(number) {
       if (number <= 10) return 'yellow';
@@ -184,18 +253,15 @@
 
     function generateLottoNumbers() {
       const pool = Array.from({ length: 45 }, (_, i) => i + 1);
-
       for (let i = pool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [pool[i], pool[j]] = [pool[j], pool[i]];
       }
-
       return pool.slice(0, 6).sort((a, b) => a - b);
     }
 
     function renderNumbers(numbers) {
       numbersEl.innerHTML = '';
-
       numbers.forEach((number, index) => {
         const ball = document.createElement('div');
         ball.className = `ball ${getColorClass(number)}`;
@@ -210,7 +276,6 @@
       item.className = 'history-item';
       item.textContent = numbers.join(' , ');
       historyListEl.prepend(item);
-
       while (historyListEl.children.length > 10) {
         historyListEl.removeChild(historyListEl.lastChild);
       }
@@ -223,18 +288,13 @@
     }
 
     async function copyNumbers() {
-      if (currentNumbers.length === 0) {
-        alert('먼저 번호를 생성하세요.');
-        return;
-      }
-
+      if (currentNumbers.length === 0) return alert('먼저 번호를 생성하세요.');
       const text = currentNumbers.join(', ');
-
       try {
         await navigator.clipboard.writeText(text);
         alert('복사 완료: ' + text);
       } catch (error) {
-        alert('복사 실패: ' + text);
+        alert('복사 실패');
       }
     }
 
