@@ -8,32 +8,33 @@ const path = require('path');
 const app = express();
 const upload = multer({ 
     storage: multer.memoryStorage(),
-    limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit per file
+    limits: { fileSize: 15 * 1024 * 1024 } // 15MB limit
 });
 
 app.use(cors());
 app.use(express.static('.'));
 
-// --- 🔒 보안 강화: .env 파일에서 정보를 읽어옵니다. ---
 const NAVER_ID = process.env.NAVER_ID; 
 const NAVER_PW = process.env.NAVER_PW; 
-const TARGET_EMAIL = process.env.TARGET_EMAIL; 
-// ---------------------------------------------------
 
 app.post('/send-email', upload.array('photos'), async (req, res) => {
     try {
+        const { recipientEmail, subject, message } = req.body;
+
         if (!req.files || req.files.length === 0) {
             return res.status(400).send('사진을 선택해 주세요.');
         }
 
         let transporter = nodemailer.createTransport({
-            service: 'naver',
             host: 'smtp.naver.com',
-            port: 465,
-            secure: true,
+            port: 587,
+            secure: false,
             auth: {
                 user: `${NAVER_ID}@naver.com`,
                 pass: NAVER_PW
+            },
+            tls: {
+                rejectUnauthorized: false
             }
         });
 
@@ -44,9 +45,9 @@ app.post('/send-email', upload.array('photos'), async (req, res) => {
 
         await transporter.sendMail({
             from: `${NAVER_ID}@naver.com`,
-            to: TARGET_EMAIL,
-            subject: `📸 사진 전송 알림 (${req.files.length}장)`,
-            text: '웹사이트에서 보낸 사진들이 도착했습니다. 첨부파일을 확인하세요.',
+            to: recipientEmail || process.env.TARGET_EMAIL,
+            subject: subject || `📸 사진 전송 알림 (${req.files.length}장)`,
+            text: message || '웹사이트에서 보낸 사진들이 도착했습니다. 첨부파일을 확인하세요.',
             attachments: attachments
         });
 

@@ -3,13 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>아내를 위한 사진 전송기 ❤️</title>
+    <title>아내를 위한 사랑의 사진 편지 ❤️</title>
     <style>
+        :root {
+            --pink-main: #ec4899;
+            --pink-light: #fce7f3;
+            --pink-border: #f9a8d4;
+        }
+
         body {
             margin: 0;
-            padding: 0;
+            padding: 20px;
             font-family: 'Pretendard', sans-serif;
-            background-color: #fce7f3;
+            background-color: var(--pink-light);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -18,27 +24,91 @@
 
         .container {
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 30px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
         }
 
         h1 {
-            color: #ec4899;
-            margin-bottom: 24px;
-            font-size: 24px;
+            color: var(--pink-main);
+            margin-bottom: 20px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--pink-main);
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-left: 5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--pink-border);
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--pink-main);
+        }
+
+        /* 즐겨찾기 스타일 */
+        .favorites {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .fav-tag {
+            background: #fff;
+            border: 1px solid var(--pink-border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .fav-tag:hover {
+            background: var(--pink-border);
+            color: white;
+        }
+
+        .add-fav {
+            font-size: 11px;
+            color: #888;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-bottom: 10px;
+            display: inline-block;
         }
 
         .upload-box {
-            border: 2px dashed #f9a8d4;
-            padding: 30px;
+            border: 2px dashed var(--pink-border);
+            padding: 20px;
             border-radius: 20px;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-bottom: 24px;
+            text-align: center;
+            margin-bottom: 20px;
             display: block;
         }
 
@@ -46,43 +116,28 @@
             background-color: #fff1f2;
         }
 
-        .icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
         .btn {
-            background-color: #ec4899;
+            background-color: var(--pink-main);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 15px;
             border-radius: 15px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.1s, opacity 0.2s;
+            transition: transform 0.1s;
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
 
         .status {
             margin-top: 15px;
-            font-size: 14px;
+            font-size: 13px;
             color: #666;
-            line-height: 1.6;
+            text-align: center;
+            line-height: 1.5;
         }
 
         #preview {
@@ -94,8 +149,8 @@
         }
 
         .preview-img {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             object-fit: cover;
             border-radius: 5px;
         }
@@ -104,17 +159,38 @@
 <body>
 
 <div class="container">
-    <h1>사랑하는 아내를 위해 ❤️</h1>
+    <h1>사랑의 사진 편지 ❤️</h1>
+
+    <!-- 받는 사람 & 즐겨찾기 -->
+    <div class="input-group">
+        <label>받는 사람 (이메일)</label>
+        <div class="favorites" id="favoritesList">
+            <!-- 즐겨찾기 버튼들이 여기에 추가됨 -->
+        </div>
+        <input type="email" id="recipientEmail" placeholder="example@naver.com">
+        <span class="add-fav" id="addFavBtn">+ 현재 주소를 즐겨찾기에 추가</span>
+    </div>
+
+    <!-- 제목 & 내용 -->
+    <div class="input-group">
+        <label>편지 제목</label>
+        <input type="text" id="subject" placeholder="오늘의 사진을 보냅니다!">
+    </div>
+
+    <div class="input-group">
+        <label>전하고 싶은 말</label>
+        <textarea id="message" rows="3" placeholder="사진과 함께 보낼 메시지를 적어주세요."></textarea>
+    </div>
     
+    <!-- 사진 선택 -->
     <label for="photoInput" class="upload-box">
-        <span class="icon">📸</span>
-        <span id="labelTxt">사진을 선택해 주세요</span>
+        <span style="font-size: 30px;">📸</span><br>
+        <span id="labelTxt" style="font-size: 14px; color: #666;">사진을 선택해 주세요</span>
         <div id="preview"></div>
     </label>
-    
     <input type="file" id="photoInput" multiple accept="image/*">
     
-    <button class="btn" id="sendBtn">사진 전송하기</button>
+    <button class="btn" id="sendBtn">사진 편지 보내기</button>
     <p class="status" id="status"></p>
 </div>
 
@@ -124,8 +200,46 @@
     const sendBtn = document.getElementById('sendBtn');
     const status = document.getElementById('status');
     const preview = document.getElementById('preview');
+    
+    const recipientInput = document.getElementById('recipientEmail');
+    const subjectInput = document.getElementById('subject');
+    const messageInput = document.getElementById('message');
+    const favoritesList = document.getElementById('favoritesList');
+    const addFavBtn = document.getElementById('addFavBtn');
 
-    // 이미지 압축 함수
+    // --- 주소록(즐겨찾기) 기능 ---
+    let favorites = JSON.parse(localStorage.getItem('wife_fav_emails') || '[]');
+
+    function renderFavorites() {
+        favoritesList.innerHTML = '';
+        favorites.forEach((email, index) => {
+            const tag = document.createElement('div');
+            tag.className = 'fav-tag';
+            tag.innerHTML = `<span>${email.split('@')[0]}</span> <span style="font-size:10px; color:#aaa;" onclick="deleteFav(${index}, event)">✕</span>`;
+            tag.onclick = () => { recipientInput.value = email; };
+            favoritesList.appendChild(tag);
+        });
+    }
+
+    addFavBtn.onclick = () => {
+        const email = recipientInput.value.trim();
+        if (email && !favorites.includes(email)) {
+            favorites.push(email);
+            localStorage.setItem('wife_fav_emails', JSON.stringify(favorites));
+            renderFavorites();
+        }
+    };
+
+    window.deleteFav = (index, event) => {
+        event.stopPropagation();
+        favorites.splice(index, 1);
+        localStorage.setItem('wife_fav_emails', JSON.stringify(favorites));
+        renderFavorites();
+    };
+
+    renderFavorites();
+
+    // --- 이미지 압축 & 전송 로직 ---
     async function compressImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -135,29 +249,20 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 1200; // 최대 가로 너비
-                    const MAX_HEIGHT = 1200; // 최대 세로 높이
+                    const MAX_SIZE = 1200;
                     let width = img.width;
                     let height = img.height;
 
                     if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
+                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
                     } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
+                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                     }
 
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // JPEG 화질 0.7로 압축
                     canvas.toBlob((blob) => {
                         resolve(new File([blob], file.name, { type: 'image/jpeg' }));
                     }, 'image/jpeg', 0.7);
@@ -185,27 +290,28 @@
     });
 
     sendBtn.addEventListener('click', async () => {
+        const email = recipientInput.value.trim();
         const files = photoInput.files;
-        if (files.length === 0) {
-            alert('사진을 먼저 선택해 주세요!');
-            return;
-        }
+
+        if (!email) return alert('받는 사람 이메일을 입력해 주세요!');
+        if (files.length === 0) return alert('사진을 먼저 선택해 주세요!');
 
         sendBtn.disabled = true;
-        sendBtn.textContent = '용량 줄이는 중... ⏳';
-        status.textContent = '빠른 전송을 위해 사진 용량을 최적화하고 있어요.';
+        sendBtn.textContent = '용량 최적화 중...';
+        status.textContent = '사진을 압축하고 있습니다.';
 
         const formData = new FormData();
+        formData.append('recipientEmail', email);
+        formData.append('subject', subjectInput.value.trim());
+        formData.append('message', messageInput.value.trim());
         
-        // 모든 파일 압축 진행
         for (let i = 0; i < files.length; i++) {
-            status.textContent = `사진 압축 중 (${i + 1}/${files.length})...`;
-            const compressedFile = await compressImage(files[i]);
-            formData.append('photos', compressedFile);
+            const compressed = await compressImage(files[i]);
+            formData.append('photos', compressed);
         }
 
-        sendBtn.textContent = '전송 중... 🚀';
-        status.textContent = '이제 네이버 메일로 순식간에 보냅니다!';
+        sendBtn.textContent = '전송 중...';
+        status.textContent = '네이버 메일로 안전하게 보내고 있습니다.';
 
         try {
             const response = await fetch('/send-email', {
@@ -214,14 +320,16 @@
             });
 
             if (response.ok) {
-                status.innerHTML = '전송 완료! ❤️ 사랑합니다.<br><small>(용량을 줄여서 아주 빠르게 보냈어요!)</small>';
+                status.innerHTML = '성공적으로 보냈습니다! ❤️';
                 status.style.color = '#ec4899';
                 photoInput.value = '';
                 preview.innerHTML = '';
                 labelTxt.textContent = '사진을 선택해 주세요';
+                subjectInput.value = '';
+                messageInput.value = '';
             } else {
                 const msg = await response.text();
-                status.textContent = '전송 실패 😢: ' + msg;
+                status.textContent = '발송 실패: ' + msg;
                 status.style.color = 'red';
             }
         } catch (error) {
@@ -229,7 +337,7 @@
             status.style.color = 'red';
         } finally {
             sendBtn.disabled = false;
-            sendBtn.textContent = '사진 전송하기';
+            sendBtn.textContent = '사진 편지 보내기';
         }
     });
 </script>
