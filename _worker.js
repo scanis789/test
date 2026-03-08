@@ -2,7 +2,6 @@ export default {
     async fetch(request, env) {
         const url = new URL(request.url);
 
-        // 1. 메일 발송 로직 (POST /send-email)
         if (request.method === 'POST' && url.pathname === '/send-email') {
             try {
                 const formData = await request.formData();
@@ -15,24 +14,35 @@ export default {
                     return new Response('사진을 선택해 주세요.', { status: 400 });
                 }
 
-                // 효율적인 Base64 변환 (메모리 절약형)
+                // 1. 아까 알려주신 API 키 직접 사용 (가장 확실한 방법)
+                const API_KEY = env.RESEND_API_KEY || 're_BvGWekF6_NF8DSLW5uPpenG5fQgM24WAE';
+
+                // 2. 대용량 파일을 위한 안전한 Base64 변환 함수
+                const arrayBufferToBase64 = (buffer) => {
+                    let binary = '';
+                    const bytes = new Uint8Array(buffer);
+                    for (let i = 0; i < bytes.byteLength; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    return btoa(binary);
+                };
+
                 const attachments = await Promise.all(photos.map(async (file) => {
                     const buffer = await file.arrayBuffer();
-                    const binary = String.fromCharCode(...new Uint8Array(buffer));
                     return {
                         filename: file.name,
-                        content: btoa(binary)
+                        content: arrayBufferToBase64(buffer)
                     };
                 }));
 
                 const resendResponse = await fetch('https://api.resend.com/emails', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                        'Authorization': `Bearer ${API_KEY}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: 'onboarding@resend.dev',
+                        from: 'WifeApp <onboarding@resend.dev>',
                         to: recipientEmail,
                         subject: subject,
                         text: message,
@@ -40,19 +50,18 @@ export default {
                     })
                 });
 
+                const responseData = await resendResponse.json();
+
                 if (resendResponse.ok) {
                     return new Response('success', { status: 200 });
                 } else {
-                    const errorMsg = await resendResponse.text();
-                    return new Response(`Resend Error: ${errorMsg}`, { status: 500 });
+                    return new Response(`Resend Error: ${JSON.stringify(responseData)}`, { status: 500 });
                 }
             } catch (error) {
                 return new Response(`Worker Error: ${error.message}`, { status: 500 });
             }
         }
 
-        // 2. 중요: 정적 파일(index.html 등)은 클라우드플레어 에셋 엔진에서 가져옴
-        // 이 부분이 무한 루프를 방지하는 핵심입니다.
         return env.ASSETS.fetch(request);
     }
 };
