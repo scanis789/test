@@ -3,170 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>아내를 위한 사랑의 사진 편지 ❤️</title>
+    <title>무민 사진 전송기!</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
+
         :root {
-            --pink-main: #ec4899;
-            --pink-light: #fce7f3;
-            --pink-border: #f9a8d4;
+            --point-pink: #f9a8d4; /* 부드러운 연분홍 */
+            --bg-pink: #fdf2f8;
+            --text-dark: #374151;
         }
 
         body {
             margin: 0;
             padding: 20px;
             font-family: 'Pretendard', sans-serif;
-            background-color: var(--pink-light);
+            /* 무민 배경 이미지 - 더 반투명하게 수정 */
+            background-image: linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.75)), 
+                              url('https://wallpapers.com/images/hd/moomin-characters-walking-7p47z9z2z9z2z9z2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            color: var(--text-dark);
         }
 
         .container {
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.92);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             width: 100%;
-            max-width: 450px;
+            max-width: 420px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         h1 {
-            color: var(--pink-main);
-            margin-bottom: 20px;
-            font-size: 22px;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+            font-size: 26px;
+            font-weight: 700;
             text-align: center;
         }
 
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: left;
         }
 
         label {
             display: block;
-            font-size: 13px;
-            color: var(--pink-main);
-            font-weight: bold;
-            margin-bottom: 5px;
-            margin-left: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4b5563;
         }
 
         input, textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid var(--pink-border);
+            padding: 14px;
+            border: 1.5px solid #e5e7eb;
             border-radius: 12px;
             box-sizing: border-box;
-            font-size: 14px;
+            font-size: 15px;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
+            background: #fff;
         }
 
         input:focus, textarea:focus {
-            border-color: var(--pink-main);
+            border-color: var(--point-pink);
+            box-shadow: 0 0 0 3px rgba(249, 168, 212, 0.2);
         }
 
-        /* 즐겨찾기 스타일 */
+        /* 즐겨찾기 태그 */
         .favorites {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .fav-tag {
-            background: #fff;
-            border: 1px solid var(--pink-border);
-            padding: 6px 12px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
-            color: #555;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            transition: 0.2s;
         }
 
         .fav-tag:hover {
-            background: var(--pink-border);
-            color: white;
+            background: var(--bg-pink);
+            border-color: var(--point-pink);
         }
 
         .add-fav {
-            font-size: 11px;
-            color: #888;
+            font-size: 12px;
+            color: #9ca3af;
             cursor: pointer;
-            text-decoration: underline;
             margin-bottom: 10px;
             display: inline-block;
+            text-decoration: underline;
         }
 
+        /* 사진 선택 박스 */
         .upload-box {
-            border: 2px dashed var(--pink-border);
-            padding: 20px;
+            border: 2px dashed #d1d5db;
+            padding: 30px;
             border-radius: 20px;
             cursor: pointer;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: block;
+            background: #f9fafb;
+            transition: 0.2s;
         }
 
         .upload-box:hover {
-            background-color: #fff1f2;
+            border-color: var(--point-pink);
+            background: var(--bg-pink);
         }
 
         .btn {
-            background-color: var(--pink-main);
+            background-color: var(--point-pink);
             color: white;
             border: none;
-            padding: 15px;
-            border-radius: 15px;
+            padding: 16px;
+            border-radius: 12px;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.1s;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            filter: brightness(0.97);
+            transform: translateY(-1px);
         }
 
         .btn:active { transform: scale(0.98); }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .btn:disabled { background: #e5e7eb; cursor: not-allowed; }
 
         .status {
-            margin-top: 15px;
-            font-size: 13px;
-            color: #666;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b7280;
             text-align: center;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         #preview {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
+            gap: 8px;
             justify-content: center;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .preview-img {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             object-fit: cover;
-            border-radius: 5px;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>사랑의 사진 편지 ❤️</h1>
+    <h1>무민 사진 전송기 </h1>
 
-    <!-- 받는 사람 & 즐겨찾기 -->
+    <!-- 받는 사람 -->
     <div class="input-group">
         <label>받는 사람 (이메일)</label>
-        <div class="favorites" id="favoritesList">
-            <!-- 즐겨찾기 버튼들이 여기에 추가됨 -->
-        </div>
+        <div class="favorites" id="favoritesList"></div>
         <input type="email" id="recipientEmail" placeholder="example@naver.com">
         <span class="add-fav" id="addFavBtn">+ 현재 주소를 즐겨찾기에 추가</span>
     </div>
@@ -174,7 +192,7 @@
     <!-- 제목 & 내용 -->
     <div class="input-group">
         <label>편지 제목</label>
-        <input type="text" id="subject" placeholder="오늘의 사진을 보냅니다!">
+        <input type="text" id="subject" placeholder="제목을 입력해주세요.">
     </div>
 
     <div class="input-group">
@@ -184,13 +202,13 @@
     
     <!-- 사진 선택 -->
     <label for="photoInput" class="upload-box">
-        <span style="font-size: 30px;">📸</span><br>
-        <span id="labelTxt" style="font-size: 14px; color: #666;">사진을 선택해 주세요</span>
+        <span style="font-size: 32px;">📸</span><br>
+        <span id="labelTxt" style="font-size: 14px; color: #9ca3af; margin-top: 8px; display: block;">사진을 선택해 주세요</span>
         <div id="preview"></div>
     </label>
     <input type="file" id="photoInput" multiple accept="image/*">
     
-    <button class="btn" id="sendBtn">사진 편지 보내기</button>
+    <button class="btn" id="sendBtn">사진 전송하기</button>
     <p class="status" id="status"></p>
 </div>
 
@@ -207,7 +225,7 @@
     const favoritesList = document.getElementById('favoritesList');
     const addFavBtn = document.getElementById('addFavBtn');
 
-    // --- 주소록(즐겨찾기) 기능 ---
+    // --- 주소록(즐겨찾기) ---
     let favorites = JSON.parse(localStorage.getItem('wife_fav_emails') || '[]');
 
     function renderFavorites() {
@@ -215,7 +233,7 @@
         favorites.forEach((email, index) => {
             const tag = document.createElement('div');
             tag.className = 'fav-tag';
-            tag.innerHTML = `<span>${email.split('@')[0]}</span> <span style="font-size:10px; color:#aaa;" onclick="deleteFav(${index}, event)">✕</span>`;
+            tag.innerHTML = `<span>${email.split('@')[0]}</span> <span style="font-size:10px; color:#ccc; margin-left:5px;" onclick="deleteFav(${index}, event)">✕</span>`;
             tag.onclick = () => { recipientInput.value = email; };
             favoritesList.appendChild(tag);
         });
@@ -239,7 +257,7 @@
 
     renderFavorites();
 
-    // --- 이미지 압축 & 전송 로직 ---
+    // --- 이미지 압축 & 전송 ---
     async function compressImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -252,13 +270,11 @@
                     const MAX_SIZE = 1200;
                     let width = img.width;
                     let height = img.height;
-
                     if (width > height) {
                         if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
                     } else {
                         if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                     }
-
                     canvas.width = width;
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
@@ -337,7 +353,7 @@
             status.style.color = 'red';
         } finally {
             sendBtn.disabled = false;
-            sendBtn.textContent = '사진 편지 보내기';
+            sendBtn.textContent = '사진 전송하기';
         }
     });
 </script>
