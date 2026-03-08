@@ -1,14 +1,254 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+  <title>로또 번호 생성기</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f8fbff 0%, #eaf2ff 100%);
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 32px 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+    }
+
+    .desc {
+      margin: 0 0 24px;
+      color: #555;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    .numbers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin: 28px 0;
+      min-height: 72px;
+    }
+
+    .ball {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #222;
+      background: #f1f5f9;
+      border: 2px solid rgba(0, 0, 0, 0.06);
+      transform: scale(0.8);
+      opacity: 0;
+      animation: popIn 0.35s ease forwards;
+    }
+
+    .ball.yellow { background: #ffe082; }
+    .ball.blue { background: #90caf9; }
+    .ball.red { background: #ef9a9a; }
+    .ball.gray { background: #d6d6d6; }
+    .ball.green { background: #a5d6a7; }
+
+    @keyframes popIn {
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(0.98);
+    }
+
+    .primary {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .history {
+      margin-top: 28px;
+      text-align: left;
+    }
+
+    .history h2 {
+      font-size: 18px;
+      margin: 0 0 12px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .history-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 15px;
+      color: #334155;
+    }
+
+    .hint {
+      margin-top: 18px;
+      font-size: 13px;
+      color: #777;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+  <div class="card">
+    <h1>로또 번호 생성기</h1>
+    <p class="desc">1부터 45까지 중 중복 없이 6개 번호를 랜덤으로 생성합니다.</p>
+
+    <div class="numbers" id="numbers"></div>
+
+    <div class="actions">
+      <button class="primary" id="generateBtn">번호 생성</button>
+      <button class="secondary" id="copyBtn">번호 복사</button>
+      <button class="secondary" id="resetBtn">초기화</button>
+    </div>
+
+    <div class="history">
+      <h2>생성 기록</h2>
+      <div class="history-list" id="historyList"></div>
+    </div>
+
+    <div class="hint">버튼을 누를 때마다 새 번호가 생성됩니다.</div>
+  </div>
+
+  <script>
+    const numbersEl = document.getElementById('numbers');
+    const historyListEl = document.getElementById('historyList');
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    let currentNumbers = [];
+
+    function getColorClass(number) {
+      if (number <= 10) return 'yellow';
+      if (number <= 20) return 'blue';
+      if (number <= 30) return 'red';
+      if (number <= 40) return 'gray';
+      return 'green';
+    }
+
+    function generateLottoNumbers() {
+      const pool = Array.from({ length: 45 }, (_, i) => i + 1);
+
+      for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+      }
+
+      return pool.slice(0, 6).sort((a, b) => a - b);
+    }
+
+    function renderNumbers(numbers) {
+      numbersEl.innerHTML = '';
+
+      numbers.forEach((number, index) => {
+        const ball = document.createElement('div');
+        ball.className = `ball ${getColorClass(number)}`;
+        ball.textContent = number;
+        ball.style.animationDelay = `${index * 0.06}s`;
+        numbersEl.appendChild(ball);
+      });
+    }
+
+    function addHistory(numbers) {
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      item.textContent = numbers.join(' , ');
+      historyListEl.prepend(item);
+
+      while (historyListEl.children.length > 10) {
+        historyListEl.removeChild(historyListEl.lastChild);
+      }
+    }
+
+    function generateAndRender() {
+      currentNumbers = generateLottoNumbers();
+      renderNumbers(currentNumbers);
+      addHistory(currentNumbers);
+    }
+
+    async function copyNumbers() {
+      if (currentNumbers.length === 0) {
+        alert('먼저 번호를 생성하세요.');
+        return;
+      }
+
+      const text = currentNumbers.join(', ');
+
+      try {
+        await navigator.clipboard.writeText(text);
+        alert('복사 완료: ' + text);
+      } catch (error) {
+        alert('복사 실패: ' + text);
+      }
+    }
+
+    function resetAll() {
+      currentNumbers = [];
+      numbersEl.innerHTML = '';
+      historyListEl.innerHTML = '';
+    }
+
+    generateBtn.addEventListener('click', generateAndRender);
+    copyBtn.addEventListener('click', copyNumbers);
+    resetBtn.addEventListener('click', resetAll);
+
+    generateAndRender();
+  </script>
 </body>
 </html>
